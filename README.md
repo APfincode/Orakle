@@ -1,11 +1,10 @@
-# <img width="40" height="40" alt="logo_app" src="https://github.com/user-attachments/assets/911ba846-a08b-4e3e-b119-ec1e78347288" style="vertical-align: middle;" /> Hyper Alpha Arena
+# O Orakle
 
-> An open-source AI-powered cryptocurrency trading platform for autonomous trading with Large Language Models. Deploy AI trading strategies with both paper trading simulation and real perpetual contract trading on Hyperliquid DEX.
+> Seek. Know. Trade. - AI-Powered Autonomous Crypto Trading
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GitHub stars](https://img.shields.io/github/stars/HammerGPT/Hyper-Alpha-Arena)](https://github.com/HammerGPT/Hyper-Alpha-Arena/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/HammerGPT/Hyper-Alpha-Arena)](https://github.com/HammerGPT/Hyper-Alpha-Arena/network)
-[![Community](https://img.shields.io/badge/Telegram-Community-blue?logo=telegram)](https://t.me/+RqxjT7Gttm9hOGEx)
+[![GitHub stars](https://img.shields.io/github/stars/APfincode/Orakle)](https://github.com/APfincode/Orakle/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/APfincode/Orakle)](https://github.com/APfincode/Orakle/network)
 
 ## 🔥 Start Trading Now - Up to 30% Fee Discount
 
@@ -13,7 +12,7 @@ Ready to put your AI trading strategies to work? Get started with these top exch
 
 ### 🚀 **Hyperliquid** - Decentralized Perpetual Exchange
 - **No KYC Required** | **Low Fees** | **High Performance**
-- Direct integration with Hyper Alpha Arena
+- Direct integration with Orakle
 - [**Open Futures Trading →**](https://app.hyperliquid.xyz/join/HYPERSVIP)
 
 ### 💰 **Binance** - World's Largest Exchange
@@ -28,9 +27,7 @@ Ready to put your AI trading strategies to work? Get started with these top exch
 
 ## Overview
 
-Hyper Alpha Arena is a production-ready AI trading platform where Large Language Models (LLMs) autonomously execute cryptocurrency trading strategies. Inspired by [nof1 Alpha Arena](https://nof1.ai), this platform enables AI models like GPT-5, Claude, and Deepseek to make intelligent trading decisions based on real-time market data and execute trades automatically.
-
-**Official Website:** https://www.akooi.com/
+Orakle is a production-ready AI trading platform where Large Language Models (LLMs) autonomously execute cryptocurrency trading strategies. This platform enables AI models like GPT-5, Claude, and Deepseek to make intelligent trading decisions based on real-time market data and execute trades automatically.
 
 **Trading Modes:**
 - **Hyperliquid Testnet (Paper Trading)**: Risk-free testing with real market mechanics, free test funds, and actual order book - a superior paper trading experience
@@ -68,22 +65,6 @@ Hyper Alpha Arena is a production-ready AI trading platform where Large Language
   - Automatic leverage selection based on market confidence
   - Full integration with existing AI decision engine
 
-## Screenshots
-
-### Main Dashboard (Hyperliquid Mainnet)
-<img width="3206" height="1928" alt="image" src="https://github.com/user-attachments/assets/afe0600b-c34c-401e-a47a-db81525a9ccf" />
-
-<img width="3206" height="1932" alt="image" src="https://github.com/user-attachments/assets/48e70a94-013e-4873-9b44-f371e3a76581" />
-
-### Model Chat Prompt
-<img width="3206" height="1930" alt="image" src="https://github.com/user-attachments/assets/e200e702-c240-4ccd-896b-68038ffe475d" />
-
-### AI Trader and Strategy Settings
-<img width="3210" height="1932" alt="image" src="https://github.com/user-attachments/assets/383e447f-b5a1-4226-a24d-ee9e5a686d6f" />
-
-### System Log
-<img width="3208" height="1932" alt="image" src="https://github.com/user-attachments/assets/821ea000-ee78-4573-8c05-52579e8369b1" />
-
 ## Quick Start
 
 ### Prerequisites
@@ -97,8 +78,8 @@ Hyper Alpha Arena is a production-ready AI trading platform where Large Language
 
 ```bash
 # Clone the repository
-git clone https://github.com/HammerGPT/Hyper-Alpha-Arena.git
-cd Hyper-Alpha-Arena
+git clone https://github.com/APfincode/Orakle.git
+cd Orakle
 
 # Start the application (choose one command based on your Docker version)
 docker compose up -d --build        # For newer Docker Desktop (recommended)
@@ -213,7 +194,7 @@ docker compose up -d --build # (or docker-compose up -d --build)
 
 ## Supported Models
 
-Hyper Alpha Arena supports any OpenAI API compatible language model. **For best results, we recommend using Deepseek** for its cost-effectiveness and strong performance in trading scenarios.
+Orakle supports any OpenAI API compatible language model. **For best results, we recommend using Deepseek** for its cost-effectiveness and strong performance in trading scenarios.
 
 Supported models include:
 - **Deepseek** (Recommended): Excellent cost-performance ratio for trading decisions
@@ -266,32 +247,12 @@ Please star and fork this repository to stay updated with development progress.
 - Python SDK: https://github.com/hyperliquid-dex/hyperliquid-python-sdk
 - Testnet: https://api.hyperliquid-testnet.xyz
 
-### Original Project
-- Open Alpha Arena: https://github.com/etrobot/open-alpha-arena
-
 ## Community & Support
 
-**🌐 Official Website**: [https://www.akooi.com/](https://www.akooi.com/)
+Join our community for discussions and support!
 
-**🐦 Contact me on Twitter/X**: [@GptHammer3309](https://x.com/GptHammer3309)
-- Latest updates on Hyper Alpha Arena development
-- AI trading insights and strategy discussions
-- Technical support and Q&A
-
-
-Join our ([Telegram group](https://t.me/+RqxjT7Gttm9hOGEx)) for real-time discussions and faster triage .
-- Report bugs (please include logs, screenshots, and steps if possible)
-- Share strategy insights or product feedback
-- Ping me about PRs/Issues so I can respond quickly
-
-Friendly reminder: Telegram is for rapid communication, but final tracking and fixes still go through GitHub Issues/Pull Requests. Never post API keys or other sensitive data in the chat.
-
-欢迎加入（[Telegram 群](https://t.me/+RqxjT7Gttm9hOGEx)）：
-- 反馈 Bug（尽量附日志、截图、复现步骤）
-- 讨论策略或产品体验
-- PR / Issue 想要我关注可在群里提醒
-
-注意：Telegram 主要用于快速沟通，正式记录请继续使用 GitHub Issues / Pull Requests；谨记不要分享密钥等敏感信息。
+- **GitHub Issues**: Report bugs and request features
+- **Discussions**: Share strategies and ask questions
 
 ## License
 
@@ -299,11 +260,14 @@ This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE
 
 ## Acknowledgments
 
+- **HammerGPT/Hyper Alpha Arena** - Original project that Orakle was forked from ([https://github.com/HammerGPT/Hyper-Alpha-Arena](https://github.com/HammerGPT/Hyper-Alpha-Arena))
 - **etrobot** - Original open-alpha-arena project
 - **nof1.ai** - Inspiration from Alpha Arena
 - **Hyperliquid** - Decentralized perpetual exchange platform
 - **OpenAI, Anthropic, Deepseek** - LLM providers
 
 ---
+
+**Copyright © 2025 APfincode**
 
 Star this repository to follow development progress.

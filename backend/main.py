@@ -22,7 +22,7 @@ from database.connection import engine, Base, SessionLocal
 from database.models import TradingConfig, User, Account, SystemConfig, AccountAssetSnapshot
 from services.asset_curve_calculator import invalidate_asset_curve_cache
 from config.settings import DEFAULT_TRADING_CONFIGS
-app = FastAPI(title="Crypto Paper Trading API")
+app = FastAPI(title="Orakle Trading API")
 
 # Health check endpoint
 @app.get("/api/health")

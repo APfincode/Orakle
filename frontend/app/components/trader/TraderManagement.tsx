@@ -45,7 +45,7 @@ export default function TraderManagement() {
     return (
       <div className="h-full w-full overflow-hidden flex flex-col gap-4 p-6">
         <div className="flex-shrink-0">
-          <h1 className="text-2xl font-bold">Welcome to Hyper Alpha Arena!</h1>
+          <h1 className="text-2xl font-bold">Welcome to Orakle!</h1>
           <p className="text-muted-foreground">Let's set up your first AI trader</p>
         </div>
 
@@ -66,7 +66,7 @@ export default function TraderManagement() {
               <div className="pt-4">
                 <SettingsDialog
                   open={false}
-                  onOpenChange={() => {}}
+                  onOpenChange={() => { }}
                   onAccountUpdated={handleAccountUpdated}
                   embedded={false}
                 />
@@ -94,7 +94,7 @@ export default function TraderManagement() {
           <CardContent className="flex-1 overflow-hidden">
             <SettingsDialog
               open={true}
-              onOpenChange={() => {}}
+              onOpenChange={() => { }}
               onAccountUpdated={handleAccountUpdated}
               embedded={true}
             />

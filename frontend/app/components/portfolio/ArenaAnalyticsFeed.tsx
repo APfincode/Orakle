@@ -188,19 +188,19 @@ export default function ArenaAnalyticsFeed({
             mergedMeta = prev
             return prev
           }
-            const metaMap = new Map<number, ArenaAccountMeta>()
-            prev.forEach((meta) => {
-              metaMap.set(meta.account_id, meta)
+          const metaMap = new Map<number, ArenaAccountMeta>()
+          prev.forEach((meta) => {
+            metaMap.set(meta.account_id, meta)
+          })
+          incoming.forEach((meta) => {
+            metaMap.set(meta.account_id, {
+              account_id: meta.account_id,
+              name: meta.name,
+              model: meta.model ?? null,
             })
-            incoming.forEach((meta) => {
-              metaMap.set(meta.account_id, {
-                account_id: meta.account_id,
-                name: meta.name,
-                model: meta.model ?? null,
-              })
-            })
-            mergedMeta = Array.from(metaMap.values())
-            return mergedMeta
+          })
+          mergedMeta = Array.from(metaMap.values())
+          return mergedMeta
         })
 
         // Update allTraderOptions only when viewing 'all' to preserve complete list
@@ -229,7 +229,7 @@ export default function ArenaAnalyticsFeed({
           lastFetched: Date.now(),
         })
       } catch (err) {
-        console.error('Failed to load Hyper Alpha Arena analytics:', err)
+        console.error('Failed to load Orakle analytics:', err)
         const message = err instanceof Error ? err.message : 'Failed to load analytics data'
         setError(message)
       } finally {

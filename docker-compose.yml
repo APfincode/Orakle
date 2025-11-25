@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:14
-    container_name: hyper-arena-postgres
+    container_name: orakle-postgres
     environment:
       POSTGRES_USER: alpha_user
       POSTGRES_PASSWORD: alpha_pass
@@ -29,7 +29,7 @@ services:
         HTTP_PROXY: ${HTTP_PROXY-}
         HTTPS_PROXY: ${HTTPS_PROXY-}
         ALL_PROXY: ${ALL_PROXY-}
-    container_name: hyper-arena-app
+    container_name: orakle-app
     environment:
       # Database connection
       DATABASE_URL: postgresql://alpha_user:alpha_pass@postgres:5432/alpha_arena
@@ -90,4 +90,4 @@ volumes:
 
 networks:
   default:
-    name: hyper-arena-network
+    name: orakle-network
