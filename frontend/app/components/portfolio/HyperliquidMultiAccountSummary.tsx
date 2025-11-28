@@ -1,7 +1,9 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
-import { Card } from '@/components/ui/card'
+import { TradingCard } from '@/components/ui/TradingCard'
 import { Badge } from '@/components/ui/badge'
-import { TrendingUp, AlertTriangle } from 'lucide-react'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+import { Skeleton } from '@/components/ui/skeleton'
+import { TrendingUp, AlertTriangle, Wallet } from 'lucide-react'
 import { getHyperliquidBalance } from '@/lib/hyperliquidApi'
 import { getModelLogo } from './logoAssets'
 import type { HyperliquidEnvironment } from '@/lib/types/hyperliquid'
@@ -26,28 +28,28 @@ interface HyperliquidMultiAccountSummaryProps {
 const getMarginStatus = (percent: number) => {
   if (percent < 50) {
     return {
-      color: 'bg-green-500',
+      color: 'bg-profit-500',
       text: 'Healthy',
       icon: TrendingUp,
-      textColor: 'text-green-600',
-      dotColor: 'bg-green-500',
+      textColor: 'text-profit-500',
+      dotColor: 'bg-profit-500',
     } as const
   }
   if (percent < 75) {
     return {
-      color: 'bg-yellow-500',
+      color: 'bg-neutral-500',
       text: 'Moderate',
       icon: AlertTriangle,
-      textColor: 'text-yellow-600',
-      dotColor: 'bg-yellow-500',
+      textColor: 'text-neutral-500',
+      dotColor: 'bg-neutral-500',
     } as const
   }
   return {
-    color: 'bg-red-500',
+    color: 'bg-loss-500',
     text: 'High Risk',
     icon: AlertTriangle,
-    textColor: 'text-red-600',
-    dotColor: 'bg-red-500',
+    textColor: 'text-loss-500',
+    dotColor: 'bg-loss-500',
   } as const
 }
 
@@ -150,11 +152,11 @@ export default function HyperliquidMultiAccountSummary({
 
   if (filteredAccounts.length === 0) {
     return (
-      <Card className="p-6">
+      <TradingCard className="p-6">
         <div className="text-sm text-muted-foreground">
           No Hyperliquid accounts configured
         </div>
-      </Card>
+      </TradingCard>
     )
   }
 
@@ -168,34 +170,33 @@ export default function HyperliquidMultiAccountSummary({
   const gridColsClass = accountCount === 1
     ? 'grid-cols-1'
     : accountCount === 2
-    ? 'grid-cols-1 md:grid-cols-2'
-    : accountCount === 3
-    ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+      ? 'grid-cols-1 md:grid-cols-2'
+      : accountCount === 3
+        ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+        : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Hyperliquid Account Status</h2>
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold text-white">Account Status</h2>
+          {globalLastUpdate && (
+            <span className="text-xs text-muted-foreground">
+              Updated: {globalLastUpdate}
+            </span>
+          )}
+        </div>
         <Badge
-          variant={environment === 'testnet' ? 'default' : 'destructive'}
-          className="uppercase text-xs"
+          variant="outline"
+          className={`uppercase text-xs border-opacity-50 ${environment === 'testnet'
+              ? 'border-electric-500 text-electric-500'
+              : 'border-profit-500 text-profit-500'
+            }`}
         >
           {environment}
         </Badge>
       </div>
-
-      {globalLastUpdate && (
-        <div className="text-xs text-muted-foreground -mt-2">
-          Last update: {globalLastUpdate}
-        </div>
-      )}
-
-      {/* Loading state */}
-      {isLoading && (
-        <div className="text-sm text-muted-foreground">Loading account data...</div>
-      )}
 
       {/* Account cards grid */}
       <div className={`grid ${gridColsClass} gap-4`}>
@@ -206,93 +207,94 @@ export default function HyperliquidMultiAccountSummary({
             : null
           const StatusIcon = marginStatus?.icon
 
+          if (account.loading && !account.balance) {
+            return <Skeleton key={account.accountId} className="h-[200px] w-full rounded-xl" />
+          }
+
           return (
-            <Card
+            <TradingCard
               key={account.accountId}
-              className="p-4 space-y-3 hover:shadow-md transition-shadow"
+              className="p-5 space-y-4 bg-oracle-800/40 border-white/5 hover:border-electric-500/30 transition-all duration-300"
             >
               {/* Account header with logo */}
-              <div className="flex items-center gap-2 pb-2 border-b border-border">
-                {logo && (
-                  <img
-                    src={logo.src}
-                    alt={logo.alt}
-                    className="h-6 w-6 rounded-full object-contain"
-                  />
+              <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                <div className="flex items-center gap-3">
+                  {logo ? (
+                    <img
+                      src={logo.src}
+                      alt={logo.alt}
+                      className="h-8 w-8 rounded-full object-contain bg-white/5 p-1"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-electric-500/20 flex items-center justify-center">
+                      <Wallet className="h-4 w-4 text-electric-500" />
+                    </div>
+                  )}
+                  <div>
+                    <div className="font-semibold text-sm text-white truncate max-w-[120px]">
+                      {account.accountName}
+                    </div>
+                    {account.balance?.walletAddress && (
+                      <div className="text-[10px] font-mono text-muted-foreground">
+                        {account.balance.walletAddress.slice(0, 4)}...
+                        {account.balance.walletAddress.slice(-4)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {marginStatus && (
+                  <div className={`h-2 w-2 rounded-full ${marginStatus.dotColor} shadow-[0_0_8px_currentColor] ${marginStatus.textColor}`} />
                 )}
-                <span className="font-semibold text-sm truncate">
-                  {account.accountName}
-                </span>
               </div>
 
               {/* Error state */}
               {account.error && (
-                <div className="text-xs text-red-600">{account.error}</div>
+                <div className="text-xs text-loss-500 bg-loss-500/10 p-2 rounded">
+                  {account.error}
+                </div>
               )}
 
               {/* Balance data */}
               {account.balance && (
-                <>
+                <div className="space-y-4">
                   {/* Total Equity */}
                   <div>
-                    <div className="text-xs text-muted-foreground">Total Equity</div>
-                    <div className="text-lg font-bold">
-                      ${account.balance.totalEquity.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                    <div className="text-xs text-muted-foreground mb-1">Total Equity</div>
+                    <div className="text-2xl font-bold font-numeric text-white tracking-tight">
+                      <AnimatedNumber
+                        value={account.balance.totalEquity}
+                        prefix="$"
+                        format={(v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      />
                     </div>
                   </div>
 
-                  {/* Used Margin */}
-                  <div>
-                    <div className="text-xs text-muted-foreground">Used Margin</div>
-                    <div className="text-sm font-medium">
-                      ${account.balance.usedMargin.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Margin Usage */}
-                  <div>
-                    <div className="text-xs text-muted-foreground">Margin Usage</div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        {account.balance.marginUsagePercent.toFixed(1)}%
-                      </span>
-                      {marginStatus && StatusIcon && (
-                        <div className="flex items-center gap-1">
-                          <span
-                            className={`inline-block w-2 h-2 rounded-full ${marginStatus.dotColor}`}
-                          ></span>
-                          <span className={`text-xs ${marginStatus.textColor}`}>
-                            {marginStatus.text}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Wallet Address */}
-                  {account.balance.walletAddress && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Used Margin */}
                     <div>
-                      <div className="text-xs text-muted-foreground">Wallet</div>
-                      <div className="text-xs font-mono truncate">
-                        {account.balance.walletAddress.slice(0, 6)}...
-                        {account.balance.walletAddress.slice(-4)}
+                      <div className="text-xs text-muted-foreground mb-1">Used Margin</div>
+                      <div className="text-sm font-medium font-numeric text-white/90">
+                        <AnimatedNumber
+                          value={account.balance.usedMargin}
+                          prefix="$"
+                          format={(v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        />
                       </div>
                     </div>
-                  )}
-                </>
-              )}
 
-              {/* Loading state for individual card */}
-              {account.loading && (
-                <div className="text-xs text-muted-foreground">Loading...</div>
+                    {/* Margin Usage */}
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Usage</div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm font-medium font-numeric ${marginStatus?.textColor}`}>
+                          {account.balance.marginUsagePercent.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
-            </Card>
+            </TradingCard>
           )
         })}
       </div>

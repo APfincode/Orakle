@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react'
+﻿import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   ArenaAccountMeta,
@@ -13,8 +13,11 @@ import {
 import { useArenaData } from '@/contexts/ArenaDataContext'
 import { useTradingMode } from '@/contexts/TradingModeContext'
 import { Button } from '@/components/ui/button'
+import { TradingCard } from '@/components/ui/TradingCard'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { getModelLogo } from './logoAssets'
-import FlipNumber from './FlipNumber'
 import HighlightWrapper from './HighlightWrapper'
 import { formatDateTime } from '@/lib/dateTime'
 
@@ -38,7 +41,7 @@ type CacheKey = string
 const formatDate = (value?: string | null) => formatDateTime(value, { style: 'short' })
 
 function formatPercent(value?: number | null) {
-  if (value === undefined || value === null) return '—'
+  if (value === undefined || value === null) return 'â€”'
   return `${(value * 100).toFixed(2)}%`
 }
 
@@ -179,8 +182,8 @@ export default function AlphaArenaFeed({
 
             if (newAccountPositions.length > 0) {
               // Construct account snapshot from positions
-            const previousMeta = prev.find((acc) => acc.account_id === accountId)
-            const accountSnapshot = {
+              const previousMeta = prev.find((acc) => acc.account_id === accountId)
+              const accountSnapshot = {
                 account_id: accountId,
                 account_name: previousMeta?.account_name || '',
                 environment: previousMeta?.environment || null,
@@ -532,7 +535,7 @@ export default function AlphaArenaFeed({
 
         <div className="flex-1 border border-t-0 border-border bg-card min-h-0 flex flex-col overflow-hidden">
           {error && (
-            <div className="p-4 text-sm text-red-500">
+            <div className="p-4 text-sm text-loss-500 bg-loss-500/10 border-b border-loss-500/20">
               {error}
             </div>
           )}
@@ -541,9 +544,13 @@ export default function AlphaArenaFeed({
             <>
               <TabsContent value="trades" className="flex-1 h-0 overflow-y-auto mt-0 p-4 space-y-4">
                 {loadingTrades && trades.length === 0 ? (
-                  <div className="text-xs text-muted-foreground">Loading trades...</div>
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-24 w-full rounded-xl" />
+                    ))}
+                  </div>
                 ) : trades.length === 0 ? (
-                  <div className="text-xs text-muted-foreground">No recent trades found.</div>
+                  <div className="text-xs text-muted-foreground text-center py-8">No recent trades found.</div>
                 ) : (
                   trades.map((trade) => {
                     const modelLogo = getModelLogo(trade.account_name || trade.model)
@@ -553,67 +560,66 @@ export default function AlphaArenaFeed({
                     }
                     return (
                       <HighlightWrapper key={`${trade.trade_id}-${trade.trade_time}`} isNew={isNew}>
-                        <div className="border border-border bg-muted/40 rounded px-4 py-3 space-y-2">
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            {modelLogo && (
-                              <img
-                                src={modelLogo.src}
-                                alt={modelLogo.alt}
-                                className="h-5 w-5 rounded-full object-contain bg-background"
-                                loading="lazy"
-                              />
-                            )}
-                            <span className="font-semibold text-foreground">{trade.account_name}</span>
+                        <TradingCard className="p-4 space-y-3 bg-oracle-800/40 border-white/5 hover:border-electric-500/30 transition-all duration-300">
+                          <div className="flex flex-wrap items-center justify-between gap-2 text-xs uppercase tracking-wide text-muted-foreground border-b border-white/5 pb-2">
+                            <div className="flex items-center gap-2">
+                              {modelLogo && (
+                                <img
+                                  src={modelLogo.src}
+                                  alt={modelLogo.alt}
+                                  className="h-5 w-5 rounded-full object-contain bg-white/5 p-0.5"
+                                  loading="lazy"
+                                />
+                              )}
+                              <span className="font-semibold text-white">{trade.account_name}</span>
+                            </div>
+                            <span>{formatDate(trade.trade_time)}</span>
                           </div>
-                          <span>{formatDate(trade.trade_time)}</span>
-                        </div>
-                        <div className="text-sm text-foreground flex flex-wrap items-center gap-2">
-                          <span className="font-semibold">{trade.account_name}</span>
-                          <span>completed a</span>
-                          <span className={`px-2 py-1 rounded text-xs font-bold ${
-                            trade.side === 'BUY'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : trade.side === 'CLOSE'
-                              ? 'bg-orange-100 text-orange-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {trade.side}
-                          </span>
-                          <span>trade on</span>
-                          <span className="flex items-center gap-2 font-semibold">
-                            {renderSymbolBadge(trade.symbol)}
-                            {trade.symbol}
-                          </span>
-                          <span>!</span>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-muted-foreground">
-                          <div>
-                            <span className="block text-[10px] uppercase tracking-wide">Price</span>
-                            <span className="font-medium text-foreground">
-                              <FlipNumber value={trade.price} prefix="$" decimals={2} />
+                          <div className="text-sm text-white flex flex-wrap items-center gap-2">
+                            <span className="font-semibold text-electric-500">{trade.account_name}</span>
+                            <span>completed a</span>
+                            <Badge variant="outline" className={`px-2 py-0.5 text-xs font-bold border-0 ${
+                              trade.side === 'BUY'
+                                ? 'bg-profit-500/20 text-profit-500'
+                                : trade.side === 'CLOSE'
+                                ? 'bg-neutral-500/20 text-neutral-500'
+                                : 'bg-loss-500/20 text-loss-500'
+                            }`}>
+                              {trade.side}
+                            </Badge>
+                            <span>trade on</span>
+                            <span className="flex items-center gap-2 font-semibold font-mono">
+                              {renderSymbolBadge(trade.symbol)}
+                              {trade.symbol}
                             </span>
                           </div>
-                          <div>
-                            <span className="block text-[10px] uppercase tracking-wide">Quantity</span>
-                            <span className="font-medium text-foreground">
-                              <FlipNumber value={trade.quantity} decimals={4} />
-                            </span>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-muted-foreground pt-1">
+                            <div>
+                              <span className="block text-[10px] uppercase tracking-wide mb-0.5">Price</span>
+                              <span className="font-medium font-numeric text-white">
+                                <AnimatedNumber value={trade.price} prefix="$" format={(v) => v.toFixed(2)} />
+                              </span>
+                            </div>
+                            <div>
+                              <span className="block text-[10px] uppercase tracking-wide mb-0.5">Quantity</span>
+                              <span className="font-medium font-numeric text-white">
+                                <AnimatedNumber value={trade.quantity} format={(v) => v.toFixed(4)} />
+                              </span>
+                            </div>
+                            <div>
+                              <span className="block text-[10px] uppercase tracking-wide mb-0.5">Notional</span>
+                              <span className="font-medium font-numeric text-white">
+                                <AnimatedNumber value={trade.notional} prefix="$" format={(v) => v.toFixed(2)} />
+                              </span>
+                            </div>
+                            <div>
+                              <span className="block text-[10px] uppercase tracking-wide mb-0.5">Commission</span>
+                              <span className="font-medium font-numeric text-white">
+                                <AnimatedNumber value={trade.commission} prefix="$" format={(v) => v.toFixed(2)} />
+                              </span>
+                            </div>
                           </div>
-                          <div>
-                            <span className="block text-[10px] uppercase tracking-wide">Notional</span>
-                            <span className="font-medium text-foreground">
-                              <FlipNumber value={trade.notional} prefix="$" decimals={2} />
-                            </span>
-                          </div>
-                          <div>
-                            <span className="block text-[10px] uppercase tracking-wide">Commission</span>
-                            <span className="font-medium text-foreground">
-                              <FlipNumber value={trade.commission} prefix="$" decimals={2} />
-                            </span>
-                          </div>
-                        </div>
-                        </div>
+                        </TradingCard>
                       </HighlightWrapper>
                     )
                   })
@@ -622,7 +628,7 @@ export default function AlphaArenaFeed({
 
               <TabsContent value="model-chat" className="flex-1 h-0 overflow-y-auto mt-0 p-4 space-y-3">
                 {loadingModelChat && modelChat.length === 0 ? (
-                  <div className="text-xs text-muted-foreground">Loading model chat…</div>
+                  <div className="text-xs text-muted-foreground">Loading model chatâ€¦</div>
                 ) : modelChat.length === 0 ? (
                   <div className="text-xs text-muted-foreground">No recent AI commentary.</div>
                 ) : (
@@ -636,142 +642,146 @@ export default function AlphaArenaFeed({
 
                     return (
                       <HighlightWrapper key={entry.id} isNew={isNew}>
-                        <button
-                          type="button"
-                          className="w-full text-left border border-border rounded bg-muted/30 p-4 space-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          onClick={() =>
-                            setExpandedChat((current) => {
-                              const next = current === entry.id ? null : entry.id
-                              if (current === entry.id) {
-                                setExpandedSections((prev) => {
-                                  const nextState = { ...prev }
-                                  Object.keys(nextState).forEach((key) => {
-                                    if (key.startsWith(`${entry.id}-`)) {
-                                      delete nextState[key]
-                                    }
+                        <TradingCard className="p-0 bg-oracle-800/40 border-white/5 hover:border-electric-500/30 transition-all duration-300">
+                          <button
+                            type="button"
+                            className="w-full text-left p-4 space-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 focus-visible:ring-offset-2 rounded-xl"
+                            onClick={() =>
+                              setExpandedChat((current) => {
+                                const next = current === entry.id ? null : entry.id
+                                if (current === entry.id) {
+                                  setExpandedSections((prev) => {
+                                    const nextState = { ...prev }
+                                    Object.keys(nextState).forEach((key) => {
+                                      if (key.startsWith(`${entry.id}-`)) {
+                                        delete nextState[key]
+                                      }
+                                    })
+                                    return nextState
                                   })
-                                  return nextState
-                                })
-                              }
-                              return next
-                            })
-                          }
-                        >
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            {modelLogo && (
-                              <img
-                                src={modelLogo.src}
-                                alt={modelLogo.alt}
-                                className="h-5 w-5 rounded-full object-contain bg-background"
-                                loading="lazy"
-                              />
-                            )}
-                            <span className="font-semibold text-foreground">{entry.account_name}</span>
-                          </div>
-                          <span>{formatDate(entry.decision_time)}</span>
-                        </div>
-                        <div className="text-sm font-medium text-foreground">
-                          {(entry.operation || 'UNKNOWN').toUpperCase()} {entry.symbol && (
-                            <span className="inline-flex items-center gap-1">
-                              {renderSymbolBadge(entry.symbol, 'sm')}
-                              {entry.symbol}
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {isExpanded ? entry.reason : `${entry.reason.slice(0, 160)}${entry.reason.length > 160 ? '…' : ''}`}
-                        </div>
-                        {isExpanded && (
-                          <div className="space-y-2 pt-3">
-                            {[{
-                              label: 'USER_PROMPT' as const,
-                              section: 'prompt' as const,
-                              content: entry.prompt_snapshot,
-                              empty: 'No prompt available',
-                            }, {
-                              label: 'CHAIN_OF_THOUGHT' as const,
-                              section: 'reasoning' as const,
-                              content: entry.reasoning_snapshot,
-                              empty: 'No reasoning available',
-                            }, {
-                              label: 'TRADING_DECISIONS' as const,
-                              section: 'decision' as const,
-                              content: entry.decision_snapshot,
-                              empty: 'No decision payload available',
-                            }].map(({ label, section, content, empty }) => {
-                              const open = isSectionExpanded(entry.id, section)
-                              const displayContent = content?.trim()
-                              const copied = isSectionCopied(entry.id, section)
-                              
-                              return (
-                                <div key={section} className="border border-border/60 rounded-md bg-background/60">
-                                  <button
-                                    type="button"
-                                    className="flex w-full items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
-                                    onClick={(event) => {
-                                      event.stopPropagation()
-                                      toggleSection(entry.id, section)
-                                    }}
-                                  >
-                                    <span className="flex items-center gap-2">
-                                      <span className="text-xs">{open ? '▼' : '▶'}</span>
-                                      {label.replace(/_/g, ' ')}
-                                    </span>
-                                    <span className="text-[10px] text-muted-foreground/80">{open ? 'Hide details' : 'Show details'}</span>
-                                  </button>
-                                  {open && (
-                                    <div
-                                      className="border-t border-border/40 bg-muted/40 px-3 py-3 text-xs text-muted-foreground"
-                                      onClick={(event) => event.stopPropagation()}
-                                    >
-                                      {displayContent ? (
-                                        <>
-                                          <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-foreground/90">
-                                            {displayContent}
-                                          </pre>
-                                          <div className="mt-3 flex justify-end">
-                                            <button
-                                              type="button"
-                                              onClick={(e) => {
-                                                e.stopPropagation()
-                                                if (displayContent) {
-                                                  handleCopySection(entry.id, section, displayContent)
-                                                }
-                                              }}
-                                              className={`px-3 py-1.5 text-[10px] font-medium rounded transition-all ${
-                                                copied 
-                                                  ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30' 
-                                                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/60'
-                                              }`}
-                                            >
-                                              {copied ? '✓ Copied' : 'Copy'}
-                                            </button>
-                                          </div>
-                                        </>
+                                }
+                                return next
+                              })
+                            }
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-2 text-xs uppercase tracking-wide text-muted-foreground border-b border-white/5 pb-2">
+                              <div className="flex items-center gap-2">
+                                {modelLogo && (
+                                  <img
+                                    src={modelLogo.src}
+                                    alt={modelLogo.alt}
+                                    className="h-5 w-5 rounded-full object-contain bg-white/5 p-0.5"
+                                    loading="lazy"
+                                  />
+                                )}
+                                <span className="font-semibold text-white">{entry.account_name}</span>
+                              </div>
+                              <span>{formatDate(entry.decision_time)}</span>
+                            </div>
+                            <div className="text-sm font-medium text-white flex items-center gap-2">
+                              <Badge variant="outline" className="border-electric-500/50 text-electric-500">
+                                {(entry.operation || 'UNKNOWN').toUpperCase()}
+                              </Badge>
+                              {entry.symbol && (
+                                <span className="inline-flex items-center gap-1 font-mono text-muted-foreground">
+                                  {renderSymbolBadge(entry.symbol, 'sm')}
+                                  {entry.symbol}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground leading-relaxed">
+                              {isExpanded ? entry.reason : `${entry.reason.slice(0, 160)}${entry.reason.length > 160 ? 'â€¦' : ''}`}
+                            </div>
+                            {isExpanded && (
+                              <div className="space-y-2 pt-3">
+                                {[{
+                                  label: 'USER_PROMPT' as const,
+                                  section: 'prompt' as const,
+                                  content: entry.prompt_snapshot,
+                                  empty: 'No prompt available',
+                                }, {
+                                  label: 'CHAIN_OF_THOUGHT' as const,
+                                  section: 'reasoning' as const,
+                                  content: entry.reasoning_snapshot,
+                                  empty: 'No reasoning available',
+                                }, {
+                                  label: 'TRADING_DECISIONS' as const,
+                                  section: 'decision' as const,
+                                  content: entry.decision_snapshot,
+                                  empty: 'No decision payload available',
+                                }].map(({ label, section, content, empty }) => {
+                                  const open = isSectionExpanded(entry.id, section)
+                                  const displayContent = content?.trim()
+                                  const copied = isSectionCopied(entry.id, section)
 
-                                      ) : (
-                                        <span className="text-muted-foreground/70">{empty}</span>
+                                  return (
+                                    <div key={section} className="border border-white/5 rounded-md bg-black/20">
+                                      <button
+                                        type="button"
+                                        className="flex w-full items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-white transition-colors"
+                                        onClick={(event) => {
+                                          event.stopPropagation()
+                                          toggleSection(entry.id, section)
+                                        }}
+                                      >
+                                        <span className="flex items-center gap-2">
+                                          <span className="text-xs">{open ? 'â–¼' : 'â–¶'}</span>
+                                          {label.replace(/_/g, ' ')}
+                                        </span>
+                                        <span className="text-[10px] text-muted-foreground/80">{open ? 'Hide details' : 'Show details'}</span>
+                                      </button>
+                                      {open && (
+                                        <div
+                                          className="border-t border-white/5 bg-black/40 px-3 py-3 text-xs text-muted-foreground"
+                                          onClick={(event) => event.stopPropagation()}
+                                        >
+                                          {displayContent ? (
+                                            <>
+                                              <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-white/80">
+                                                {displayContent}
+                                              </pre>
+                                              <div className="mt-3 flex justify-end">
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    if (displayContent) {
+                                                      handleCopySection(entry.id, section, displayContent)
+                                                    }
+                                                  }}
+                                                  className={`px-3 py-1.5 text-[10px] font-medium rounded transition-all ${copied
+                                                      ? 'bg-profit-500/20 text-profit-500 border border-profit-500/30'
+                                                      : 'bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white border border-white/10'
+                                                    }`}
+                                                >
+                                                  {copied ? 'âœ“ Copied' : 'Copy'}
+                                                </button>
+                                              </div>
+                                            </>
+
+                                          ) : (
+                                            <span className="text-muted-foreground/70">{empty}</span>
+                                          )}
+                                        </div>
                                       )}
                                     </div>
-                                  )}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        )}
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground uppercase tracking-wide">
-                          <span>Prev Portion: <span className="font-semibold text-foreground">{(entry.prev_portion * 100).toFixed(1)}%</span></span>
-                          <span>Target Portion: <span className="font-semibold text-foreground">{(entry.target_portion * 100).toFixed(1)}%</span></span>
-                          <span>Total Balance: <span className="font-semibold text-foreground">
-                            <FlipNumber value={entry.total_balance} prefix="$" decimals={2} />
-                          </span></span>
-                          <span>Executed: <span className={`font-semibold ${entry.executed ? 'text-emerald-600' : 'text-amber-600'}`}>{entry.executed ? 'YES' : 'NO'}</span></span>
-                        </div>
-                        <div className="mt-2 text-[11px] text-primary underline">
-                          {isExpanded ? 'Click to collapse' : 'Click to expand'}
-                        </div>
-                        </button>
+                                  )
+                                })}
+                              </div>
+                            )}
+                            <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground uppercase tracking-wide pt-2 border-t border-white/5">
+                              <span>Prev Portion: <span className="font-semibold text-white">{(entry.prev_portion * 100).toFixed(1)}%</span></span>
+                              <span>Target Portion: <span className="font-semibold text-white">{(entry.target_portion * 100).toFixed(1)}%</span></span>
+                              <span>Total Balance: <span className="font-semibold text-white">
+                                <AnimatedNumber value={entry.total_balance} prefix="$" format={(v) => v.toFixed(2)} />
+                              </span></span>
+                              <span>Executed: <span className={`font-semibold ${entry.executed ? 'text-profit-500' : 'text-neutral-500'}`}>{entry.executed ? 'YES' : 'NO'}</span></span>
+                            </div>
+                            <div className="mt-2 text-[11px] text-electric-500 underline opacity-50 hover:opacity-100 transition-opacity">
+                              {isExpanded ? 'Click to collapse' : 'Click to expand'}
+                            </div>
+                          </button>
+                        </TradingCard>
                       </HighlightWrapper>
                     )
                   })
@@ -780,95 +790,99 @@ export default function AlphaArenaFeed({
 
               <TabsContent value="positions" className="flex-1 h-0 overflow-y-auto mt-0 p-4 space-y-4">
                 {loadingPositions && positions.length === 0 ? (
-                  <div className="text-xs text-muted-foreground">Loading positions…</div>
+                  <div className="space-y-4">
+                    {[1, 2].map((i) => (
+                      <Skeleton key={i} className="h-48 w-full rounded-xl" />
+                    ))}
+                  </div>
                 ) : positions.length === 0 ? (
-                  <div className="text-xs text-muted-foreground">No active positions currently.</div>
+                  <div className="text-xs text-muted-foreground text-center py-8">No active positions currently.</div>
                 ) : (
                   positions.map((snapshot) => {
                     const marginUsageClass =
                       snapshot.margin_usage_percent !== undefined && snapshot.margin_usage_percent !== null
                         ? snapshot.margin_usage_percent >= 75
-                          ? 'text-red-600'
+                          ? 'text-loss-500'
                           : snapshot.margin_usage_percent >= 50
-                            ? 'text-amber-600'
-                            : 'text-emerald-600'
+                            ? 'text-warning-500'
+                            : 'text-profit-500'
                         : 'text-muted-foreground'
                     return (
-                      <div key={snapshot.account_id} className="border border-border rounded bg-muted/40">
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+                      <TradingCard key={snapshot.account_id} className="p-0 bg-oracle-800/40 border-white/5">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 px-4 py-3 bg-white/5">
                           <div className="flex items-center gap-3">
-                            <div className="text-sm font-semibold uppercase tracking-wide text-foreground">
+                            <div className="text-sm font-semibold uppercase tracking-wide text-white">
                               {snapshot.account_name}
                             </div>
                             {snapshot.environment && (
-                              <span className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
+                              <Badge variant="outline" className="border-white/10 text-[10px] uppercase tracking-wide text-muted-foreground">
                                 {snapshot.environment}
-                              </span>
+                              </Badge>
                             )}
                           </div>
                           <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-wide text-muted-foreground">
                             <div>
-                              <span className="block text-[10px] text-muted-foreground">Total Equity</span>
-                              <span className="font-semibold text-foreground">
-                                <FlipNumber value={snapshot.total_assets} prefix="$" decimals={2} />
+                              <span className="block text-[10px] text-muted-foreground mb-0.5">Total Equity</span>
+                              <span className="font-semibold font-numeric text-white">
+                                <AnimatedNumber value={snapshot.total_assets} prefix="$" format={(v) => v.toFixed(2)} />
                               </span>
                             </div>
                             <div>
-                              <span className="block text-[10px] text-muted-foreground">Available Cash</span>
-                              <span className="font-semibold text-foreground">
-                                <FlipNumber value={snapshot.available_cash} prefix="$" decimals={2} />
+                              <span className="block text-[10px] text-muted-foreground mb-0.5">Available Cash</span>
+                              <span className="font-semibold font-numeric text-white">
+                                <AnimatedNumber value={snapshot.available_cash} prefix="$" format={(v) => v.toFixed(2)} />
                               </span>
                             </div>
                             <div>
-                              <span className="block text-[10px] text-muted-foreground">Used Margin</span>
-                              <span className="font-semibold text-foreground">
-                                <FlipNumber value={snapshot.used_margin ?? 0} prefix="$" decimals={2} />
+                              <span className="block text-[10px] text-muted-foreground mb-0.5">Used Margin</span>
+                              <span className="font-semibold font-numeric text-white">
+                                <AnimatedNumber value={snapshot.used_margin ?? 0} prefix="$" format={(v) => v.toFixed(2)} />
                               </span>
                             </div>
                             <div>
-                              <span className="block text-[10px] text-muted-foreground">Margin Usage</span>
-                              <span className={`font-semibold ${marginUsageClass}`}>
+                              <span className="block text-[10px] text-muted-foreground mb-0.5">Margin Usage</span>
+                              <span className={`font-semibold font-numeric ${marginUsageClass}`}>
                                 {snapshot.margin_usage_percent !== undefined && snapshot.margin_usage_percent !== null
                                   ? `${snapshot.margin_usage_percent.toFixed(2)}%`
-                                  : '—'}
+                                  : 'â€”'}
                               </span>
                             </div>
                             <div>
-                              <span className="block text-[10px] text-muted-foreground">Unrealized P&L</span>
-                              <span className={`font-semibold ${snapshot.total_unrealized_pnl >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                <FlipNumber value={snapshot.total_unrealized_pnl} prefix="$" decimals={2} />
+                              <span className="block text-[10px] text-muted-foreground mb-0.5">Unrealized P&L</span>
+                              <span className={`font-semibold font-numeric ${snapshot.total_unrealized_pnl >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
+                                <AnimatedNumber value={snapshot.total_unrealized_pnl} prefix="$" format={(v) => v.toFixed(2)} />
                               </span>
                             </div>
                             <div>
-                              <span className="block text-[10px] text-muted-foreground">Total Return</span>
-                              <span className={`font-semibold ${snapshot.total_return && snapshot.total_return >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                              <span className="block text-[10px] text-muted-foreground mb-0.5">Total Return</span>
+                              <span className={`font-semibold font-numeric ${snapshot.total_return && snapshot.total_return >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
                                 {formatPercent(snapshot.total_return)}
                               </span>
                             </div>
                           </div>
                         </div>
                         <div className="overflow-x-auto">
-                          <table className="min-w-[980px] divide-y divide-border">
-                            <thead className="bg-muted/50">
+                          <table className="min-w-[980px] divide-y divide-white/5">
+                            <thead className="bg-black/20">
                               <tr className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                                <th className="px-4 py-2 text-left">Side</th>
-                                <th className="px-4 py-2 text-left">Coin</th>
-                                <th className="px-4 py-2 text-left">Size</th>
-                                <th className="px-4 py-2 text-left">Entry / Current</th>
-                                <th className="px-4 py-2 text-left">Leverage</th>
-                                <th className="px-4 py-2 text-left">Margin Used</th>
-                                <th className="px-4 py-2 text-left">Notional</th>
-                                <th className="px-4 py-2 text-left">Current Value</th>
-                                <th className="px-4 py-2 text-left">Unreal P&L</th>
-                                <th className="px-4 py-2 text-left">Portfolio %</th>
+                                <th className="px-4 py-2 text-left font-medium">Side</th>
+                                <th className="px-4 py-2 text-left font-medium">Coin</th>
+                                <th className="px-4 py-2 text-left font-medium">Size</th>
+                                <th className="px-4 py-2 text-left font-medium">Entry / Current</th>
+                                <th className="px-4 py-2 text-left font-medium">Leverage</th>
+                                <th className="px-4 py-2 text-left font-medium">Margin Used</th>
+                                <th className="px-4 py-2 text-left font-medium">Notional</th>
+                                <th className="px-4 py-2 text-left font-medium">Current Value</th>
+                                <th className="px-4 py-2 text-left font-medium">Unreal P&L</th>
+                                <th className="px-4 py-2 text-left font-medium">Portfolio %</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-border text-xs text-muted-foreground">
+                            <tbody className="divide-y divide-white/5 text-xs text-muted-foreground">
                               {snapshot.positions.map((position, idx) => {
                                 const leverageLabel =
                                   position.leverage && position.leverage > 0
                                     ? `${position.leverage.toFixed(2)}x`
-                                    : '—'
+                                    : 'â€”'
                                 const marginUsed = position.margin_used ?? 0
                                 const roePercent =
                                   position.return_on_equity !== undefined && position.return_on_equity !== null
@@ -881,39 +895,45 @@ export default function AlphaArenaFeed({
                                 const unrealizedDecimals =
                                   Math.abs(position.unrealized_pnl) < 1 ? 4 : 2
                                 return (
-                                  <tr key={`${position.symbol}-${idx}`}>
-                                    <td className="px-4 py-2 font-semibold text-foreground">{position.side}</td>
+                                  <tr key={`${position.symbol}-${idx}`} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-4 py-2 font-semibold text-white">
+                                      <Badge variant="outline" className={`border-0 px-1.5 py-0 ${
+                                        position.side === 'LONG' ? 'bg-profit-500/20 text-profit-500' : 'bg-loss-500/20 text-loss-500'
+                                      }`}>
+                                        {position.side}
+                                      </Badge>
+                                    </td>
                                     <td className="px-4 py-2">
-                                      <div className="flex items-center gap-2 font-semibold text-foreground">
+                                      <div className="flex items-center gap-2 font-semibold text-white font-mono">
                                         {renderSymbolBadge(position.symbol, 'sm')}
                                         {position.symbol}
                                       </div>
                                       <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{position.market}</div>
                                     </td>
-                                    <td className="px-4 py-2">
-                                      <FlipNumber value={position.quantity} decimals={4} />
+                                    <td className="px-4 py-2 font-numeric">
+                                      <AnimatedNumber value={position.quantity} format={(v) => v.toFixed(4)} />
                                     </td>
-                                    <td className="px-4 py-2">
-                                      <div className="text-foreground font-semibold">
-                                        <FlipNumber value={position.avg_cost} prefix="$" decimals={2} />
+                                    <td className="px-4 py-2 font-numeric">
+                                      <div className="text-white font-semibold">
+                                        <AnimatedNumber value={position.avg_cost} prefix="$" format={(v) => v.toFixed(2)} />
                                       </div>
                                       <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                                        <FlipNumber value={position.current_price} prefix="$" decimals={2} />
+                                        <AnimatedNumber value={position.current_price} prefix="$" format={(v) => v.toFixed(2)} />
                                       </div>
                                     </td>
-                                    <td className="px-4 py-2">{leverageLabel}</td>
-                                    <td className="px-4 py-2">
-                                      <FlipNumber value={marginUsed} prefix="$" decimals={2} />
+                                    <td className="px-4 py-2 font-numeric">{leverageLabel}</td>
+                                    <td className="px-4 py-2 font-numeric">
+                                      <AnimatedNumber value={marginUsed} prefix="$" format={(v) => v.toFixed(2)} />
                                     </td>
-                                    <td className="px-4 py-2">
-                                      <FlipNumber value={position.notional} prefix="$" decimals={2} />
+                                    <td className="px-4 py-2 font-numeric">
+                                      <AnimatedNumber value={position.notional} prefix="$" format={(v) => v.toFixed(2)} />
                                     </td>
-                                    <td className="px-4 py-2">
-                                      <FlipNumber value={position.current_value} prefix="$" decimals={2} />
+                                    <td className="px-4 py-2 font-numeric">
+                                      <AnimatedNumber value={position.current_value} prefix="$" format={(v) => v.toFixed(2)} />
                                     </td>
-                                    <td className={`px-4 py-2 font-semibold ${position.unrealized_pnl >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                    <td className={`px-4 py-2 font-semibold font-numeric ${position.unrealized_pnl >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
                                       <div>
-                                        <FlipNumber value={position.unrealized_pnl} prefix="$" decimals={unrealizedDecimals} />
+                                        <AnimatedNumber value={position.unrealized_pnl} prefix="$" format={(v) => v.toFixed(unrealizedDecimals)} />
                                       </div>
                                       {roePercent !== null && (
                                         <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -921,8 +941,8 @@ export default function AlphaArenaFeed({
                                         </div>
                                       )}
                                     </td>
-                                    <td className="px-4 py-2">
-                                      {portfolioPercent !== null ? `${portfolioPercent.toFixed(2)}%` : '—'}
+                                    <td className="px-4 py-2 font-numeric">
+                                      {portfolioPercent !== null ? `${portfolioPercent.toFixed(2)}%` : 'â€”'}
                                     </td>
                                   </tr>
                                 )
@@ -930,7 +950,7 @@ export default function AlphaArenaFeed({
                             </tbody>
                           </table>
                         </div>
-                      </div>
+                      </TradingCard>
                     )
                   })
                 )}

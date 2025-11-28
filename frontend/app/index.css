@@ -4,80 +4,87 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Oracle Deep Blues */
+    --oracle-900: 230 45% 12%;
+    --oracle-800: 230 40% 18%;
+    --oracle-700: 230 35% 24%;
+    --oracle-600: 230 30% 35%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    /* Mystic Purples */
+    --mystic-600: 270 50% 45%;
+    --mystic-500: 270 55% 55%;
+    --mystic-400: 270 60% 65%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    /* Electric Cyan (Accent) */
+    --electric-500: 190 95% 55%;
+    --electric-400: 190 90% 65%;
+    --electric-300: 190 85% 75%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    /* Trading Status */
+    --profit-500: 145 65% 50%;
+    --loss-500: 0 70% 55%;
+    --neutral-500: 45 90% 60%;
 
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+    /* Semantic Colors - Default to Dark Mode for Orakle */
+    --background: var(--oracle-900);
+    --foreground: 0 0% 98%;
 
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+    --card: var(--oracle-800);
+    --card-foreground: 0 0% 98%;
 
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --popover: var(--oracle-800);
+    --popover-foreground: 0 0% 98%;
 
-    --destructive: 0 84.2% 60.2%;
+    --primary: var(--electric-500);
+    --primary-foreground: 230 45% 12%;
+
+    --secondary: var(--oracle-700);
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: var(--oracle-700);
+    --muted-foreground: 230 20% 70%;
+
+    --accent: var(--mystic-600);
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: var(--loss-500);
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: 230 30% 35%;
+    --input: 230 30% 35%;
+    --ring: var(--electric-500);
 
     --radius: 0.5rem;
 
-    --chart-1: 12 76% 61%;
-
-    --chart-2: 173 58% 39%;
-
-    --chart-3: 197 37% 24%;
-
-    --chart-4: 43 74% 66%;
-
-    --chart-5: 27 87% 67%;
+    /* Chart Colors */
+    --chart-1: var(--electric-500);
+    --chart-2: var(--mystic-500);
+    --chart-3: var(--profit-500);
+    --chart-4: var(--neutral-500);
+    --chart-5: var(--loss-500);
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    /* Same as root since Orakle is dark-first */
+    --background: var(--oracle-900);
     --foreground: 0 0% 98%;
-
-    --card: 0 0% 3.9%;
+    --card: var(--oracle-800);
     --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 3.9%;
+    --popover: var(--oracle-800);
     --popover-foreground: 0 0% 98%;
-
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-
-    --secondary: 0 0% 14.9%;
+    --primary: var(--electric-500);
+    --primary-foreground: 230 45% 12%;
+    --secondary: var(--oracle-700);
     --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-
-    --accent: 0 0% 14.9%;
+    --muted: var(--oracle-700);
+    --muted-foreground: 230 20% 70%;
+    --accent: var(--mystic-600);
     --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    --destructive: var(--loss-500);
     --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 3.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 230 30% 35%;
+    --input: 230 30% 35%;
+    --ring: var(--electric-500);
   }
 }
 

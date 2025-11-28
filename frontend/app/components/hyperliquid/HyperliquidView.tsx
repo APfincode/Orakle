@@ -25,6 +25,9 @@ interface HyperliquidViewProps {
   refreshKey?: number
 }
 
+import { TradingCard } from '@/components/ui/TradingCard'
+import { Skeleton } from '@/components/ui/skeleton'
+
 export default function HyperliquidView({ wsRef, refreshKey = 0 }: HyperliquidViewProps) {
   const { tradingMode } = useTradingMode()
   const [loading, setLoading] = useState(true)
@@ -61,48 +64,56 @@ export default function HyperliquidView({ wsRef, refreshKey = 0 }: HyperliquidVi
 
   if (loading && !positionsData) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-muted-foreground">Loading Hyperliquid data...</div>
+      <div className="grid gap-6 grid-cols-5 h-full min-h-0 p-6">
+        <div className="col-span-3 flex flex-col gap-4">
+          <Skeleton className="h-[320px] w-full rounded-xl" />
+          <Skeleton className="h-[200px] w-full rounded-xl" />
+        </div>
+        <div className="col-span-2">
+          <Skeleton className="h-full w-full rounded-xl" />
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="grid gap-6 grid-cols-5 h-full min-h-0">
+    <div className="grid gap-6 grid-cols-1 lg:grid-cols-5 h-full min-h-0 p-6">
       {/* Left Panel - Chart & Account Summary */}
-      <div className="col-span-3 flex flex-col gap-4 min-h-0">
+      <div className="col-span-1 lg:col-span-3 flex flex-col gap-6 min-h-0">
         <div className="flex-1 min-h-[320px]">
           {positionsData?.accounts?.length > 0 ? (
-            <HyperliquidAssetChart
-              accountId={firstAccountId}
-              refreshTrigger={chartRefreshKey}
-              environment={environment}
-              selectedAccount={selectedAccount}
-            />
+            <TradingCard className="h-full p-1 bg-oracle-900/40">
+              <HyperliquidAssetChart
+                accountId={firstAccountId}
+                refreshTrigger={chartRefreshKey}
+                environment={environment}
+                selectedAccount={selectedAccount}
+              />
+            </TradingCard>
           ) : (
-            <div className="bg-card border border-border rounded-lg h-full flex items-center justify-center">
+            <TradingCard className="h-full flex items-center justify-center">
               <div className="text-muted-foreground">No Hyperliquid account configured</div>
-            </div>
+            </TradingCard>
           )}
         </div>
-        <div className="border text-card-foreground shadow p-6 space-y-6">
+        <TradingCard className="p-0 overflow-hidden">
           <HyperliquidMultiAccountSummary
             accounts={accounts}
             refreshKey={refreshKey + chartRefreshKey}
             selectedAccount={selectedAccount}
           />
-        </div>
+        </TradingCard>
       </div>
 
       {/* Right Panel - Feed */}
-      <div className="col-span-2 flex flex-col min-h-0">
-        <div className="flex-1 min-h-0 border border-border rounded-lg bg-card shadow-sm px-4 py-3 flex flex-col">
+      <div className="col-span-1 lg:col-span-2 flex flex-col min-h-0">
+        <TradingCard className="flex-1 min-h-0 flex flex-col p-0 overflow-hidden bg-oracle-900/60">
           <AlphaArenaFeed
             wsRef={wsRef}
             selectedAccount={selectedAccount}
             onSelectedAccountChange={setSelectedAccount}
           />
-        </div>
+        </TradingCard>
       </div>
     </div>
   )
